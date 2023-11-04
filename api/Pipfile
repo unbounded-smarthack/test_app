@@ -8,6 +8,8 @@ django = "*"
 djangorestframework = "*"
 python-dotenv = "*"
 psycopg = {extras = ["pool", "binary"], version = "*"}
+bcrypt = "*"
+drf-spectacular = "*"
 
 [dev-packages]
 
