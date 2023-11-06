@@ -10,6 +10,7 @@ python-dotenv = "*"
 psycopg = {extras = ["pool", "binary"], version = "*"}
 bcrypt = "*"
 drf-spectacular = "*"
+channels = "*"
 
 [dev-packages]
 
