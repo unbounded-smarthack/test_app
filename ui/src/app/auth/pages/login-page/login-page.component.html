@@ -1,16 +1,6 @@
-<form [formGroup]="registerForm" (submit)="register()" autocomplete="new-password">
-    <h1>Register</h1>
-    
-    <div class="form-control">
-        <label for="username">Username</label>
-        <input
-          formControlName="username"
-          id="username"
-          autocomplete="new-password"
-          type="text"
-        />
-    </div>
-
+<form [formGroup]="loginForm" (submit)="login()" autocomplete="new-password">
+    <h1>Login</h1>
+  
     <div class="form-control">
       <label for="email">Email</label>
       <input
@@ -31,5 +21,5 @@
       />
     </div>
   
-    <button type="submit">Register &#8594;</button>
+    <button type="submit">Login &#8594;</button>
   </form>

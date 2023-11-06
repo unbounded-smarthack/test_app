@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-register-page',
@@ -6,14 +7,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./register-page.component.scss']
 })
 export class RegisterPageComponent {
-  name: string = '';
-  email: string = '';
-  password: string = '';
+  registerForm = new FormGroup({
+    username: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', Validators.required),
+  });
 
-  onSubmit() {
+  register() {
     console.log('Registration form submitted!');
-    console.log(`Name: ${this.name}`);
-    console.log(`Email: ${this.email}`);
-    console.log(`Password: ${this.password}`);
+    console.log(`Name: ${this.registerForm.value.username}`);
+    console.log(`Email: ${this.registerForm.value.email}`);
+    console.log(`Password: ${this.registerForm.value.password}`);
   }
 }

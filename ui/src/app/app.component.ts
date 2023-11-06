@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ui';
+  loginValue = 'login';
+
+  switchLoginRegister() {
+    this.loginValue = this.loginValue === 'login' ? 'register' : 'login';
+  }
 }
