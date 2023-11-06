@@ -1,3 +1,8 @@
+<!-- Link to blog page -->
+<a [routerLink]="['/blog/1']">Blog</a>
+
+<router-outlet></router-outlet>
+
 <!-- Button to switch from login to registration-->
 <!--Use ngSwitch to switch between components-->
 <mat-button-toggle-group name="login-register" aria-label="Register or Login" [(ngModel)]="loginValue">
