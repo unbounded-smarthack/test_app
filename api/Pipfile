@@ -6,10 +6,11 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework = "*"
-python-dotenv = "*"
 psycopg = {extras = ["pool", "binary"], version = "*"}
 bcrypt = "*"
 drf-spectacular = "*"
+python-dotenv = "*"
+channels = {extras = ["daphne"], version = "*"}
 
 [dev-packages]
 
