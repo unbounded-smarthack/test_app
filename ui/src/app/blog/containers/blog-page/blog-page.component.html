@@ -1,0 +1,9 @@
+<div>Comments blog</div>
+<div>
+  <ul *ngFor="let comment of comments">
+    <li>{{comment}}</li>
+  </ul>
+</div>
+
+<input [formControl]="message">
+<button id="btn" (click)="sendMessage()">Send</button>
