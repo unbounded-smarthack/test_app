@@ -9,7 +9,7 @@ class CommentConsumer(AsyncWebsocketConsumer):
         self.blog_id = self.scope['url_route']['kwargs']['blog_id']
         self.blog_group_name = f'blog_{self.blog_id}'
 
-        #TODO Get first page of existing comments from database and sort by date
+        #TODO Get first page of existing comments from database
         comments = ["Already existing comment 1", "Already existing comment 2"]
 
         await self.channel_layer.group_add(
