@@ -5,5 +5,11 @@
   </ul>
 </div>
 
+<div>
+  <div *ngFor="let blog of blogs$ | async">
+    {{blog.title}}
+  </div>
+</div>
+
 <input [formControl]="message">
 <button id="btn" (click)="sendMessage()">Send</button>

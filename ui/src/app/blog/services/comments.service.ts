@@ -1,7 +1,15 @@
 import {Injectable} from "@angular/core";
 import {WebSocketSubject} from "rxjs/internal/observable/dom/WebSocketSubject";
-import {Observable, of, switchMap} from "rxjs";
+import {map, Observable, of, switchMap} from "rxjs";
 import {webSocket} from "rxjs/webSocket";
+class Blog {
+  constructor(
+    public id: number,
+    public title: string,
+    public content: string,
+  ) {
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +41,22 @@ export class CommentsService {
     } else {
       console.error('Did not send message: No connection found');
     }
+  }
+
+  get_blogs(): Observable<Blog[]> {
+    return of([{
+      id: 1,
+      title: "Blog2",
+      content: "Content2"
+    }]).pipe(
+      map((data) =>
+        data.map((blog_data) => new Blog(
+          blog_data.id,
+          blog_data.title,
+          blog_data.content
+        ))
+      )
+    )
   }
 
 }

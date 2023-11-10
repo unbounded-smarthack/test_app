@@ -12,6 +12,7 @@ export class BlogPageComponent implements OnInit, OnDestroy{
   blog_id: number | undefined;
   comments: any[] = [];
   message: FormControl = new FormControl('');
+  blogs$ = this.commentsService.get_blogs();
 
   constructor(public commentsService: CommentsService, private route: ActivatedRoute) {
   }
