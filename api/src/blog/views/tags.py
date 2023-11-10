@@ -1,5 +1,4 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from rest_framework import parsers
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -9,14 +8,12 @@ from blog.serializers import TagSerializer
 
 
 class TagListView(APIView):
-    parser_classes = [parsers.FormParser]
     @extend_schema(
-        summary='Tag List and Create',
-        description="Tag List and Create",
+        summary='Tag List',
+        description="Tag List",
         request=TagSerializer,
         responses={
-            200: OpenApiResponse(description='Json Response'),
-            201: OpenApiResponse(description='Json Response')
+            200: OpenApiResponse(description='Json Response with the data'),
         }
     )
     def get(self, request):
@@ -24,6 +21,15 @@ class TagListView(APIView):
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @extend_schema(
+        summary='Tag Create',
+        description="Tag Create",
+        request=TagSerializer,
+        responses={
+            201: OpenApiResponse(description='Json Response with the message'),
+            400: OpenApiResponse(description='Json Response with the errors'),
+        }
+    )
     def post(self, request):
         data = {
             'name': request.data.get('name'),

@@ -7,8 +7,6 @@ from .serializers import UserRegistrationSerializer
 
 
 class UserRegistrationView(APIView):
-    parser_classes = [parsers.FormParser]
-
     @extend_schema(
         summary='User Registration',
         description="User Registration",
