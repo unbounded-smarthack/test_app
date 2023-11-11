@@ -35,7 +35,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
     'drf_spectacular',
 
     'django.contrib.admin',
@@ -76,7 +75,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'app.wsgi.application'
-ASGI_APPLICATION = 'app.routing.application'
 
 CHANNEL_LAYERS = {
     "default": {
