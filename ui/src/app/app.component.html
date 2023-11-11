@@ -11,6 +11,8 @@
 </mat-button-toggle-group>
 
 <div  [ngSwitch]="loginValue">
-  <app-login-page *ngSwitchCase="'login'"></app-login-page>
-  <app-register-page *ngSwitchCase="'register'"></app-register-page>
+  <app-login-button></app-login-button>
+  <app-user-profile></app-user-profile>
+<!--  <app-login-page *ngSwitchCase="'login'"></app-login-page>-->
+<!--  <app-register-page *ngSwitchCase="'register'"></app-register-page>-->
 </div>
