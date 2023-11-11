@@ -39,6 +39,10 @@ class ActivityListView(APIView):
         if serializer.is_valid():
             serializer.validated_data["user"] = user
             serializer.save()
+
+            user.experience += serializer.data["experience_gain"]
+            user.save()
+
             return Response(
                 serializer.data["experience_gain"], status=status.HTTP_201_CREATED
             )
