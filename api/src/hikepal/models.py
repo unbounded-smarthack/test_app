@@ -1,5 +1,8 @@
 from django.db import models
 
+from app.settings import EXPERIENCE_GAIN_WEIGHT
+from hikepal.utils import calculate_experience
+
 
 class Trail(models.Model):
     name = models.CharField(max_length=100)
@@ -26,8 +29,9 @@ class Activity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def calculate_experience_gain(self):
-        # TODO: Implement a better algorithm for calculating experience gain
-        return self.distance + self.elevation_gain + self.elevation_loss
+        return EXPERIENCE_GAIN_WEIGHT * calculate_experience(
+            self.distance, self.elevation_gain, self.elevation_loss, self.duration
+        )
 
     def __str__(self):
         return f"{self.user.username} - {self.created_at}"

@@ -167,3 +167,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+DISTANCE_WEIGHT = 0.5
+ELEVATION_GAIN_WEIGHT = 0.3
+ELEVATION_LOSS_WEIGHT = 0.2
+DURATION_WEIGHT = -0.2
+EXPERIENCE_GAIN_WEIGHT = 0.1
