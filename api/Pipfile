@@ -11,6 +11,7 @@ bcrypt = "*"
 drf-spectacular = "*"
 python-dotenv = "*"
 channels = {extras = ["daphne"], version = "*"}
+django-cors-headers = "*"
 
 [dev-packages]
 

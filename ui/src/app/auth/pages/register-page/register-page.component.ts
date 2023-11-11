@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register-page',
@@ -13,10 +14,22 @@ export class RegisterPageComponent {
     password: new FormControl('', Validators.required),
   });
 
+  user: any = {};
+
+  constructor(private authService: AuthService) { }
+
   register() {
-    console.log('Registration form submitted!');
-    console.log(`Name: ${this.registerForm.value.username}`);
-    console.log(`Email: ${this.registerForm.value.email}`);
-    console.log(`Password: ${this.registerForm.value.password}`);
+    //set user object to the values from the form:
+    this.user.username = this.registerForm.value.username;
+    this.user.email = this.registerForm.value.email;
+    this.user.password = this.registerForm.value.password;
+    this.authService.register(this.user).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.log(error);
+      }
+    )
   }
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -12,9 +13,11 @@ export class LoginPageComponent {
     password: new FormControl('', Validators.required),
   });
 
+  constructor(private authService: AuthService) { }
+
   login() {
-    console.log('Login form submitted!');
-    console.log(`Email: ${this.loginForm.value.email}`);
-    console.log(`Password: ${this.loginForm.value.password}`);
+    this.authService.login("testtest", "string").subscribe(
+      console.log
+    )   
   }
 }
