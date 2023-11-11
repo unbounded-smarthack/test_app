@@ -5,11 +5,9 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
-from rest_framework.authtoken import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("token-auth/", views.obtain_auth_token),
     path("api/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/swagger-ui/",

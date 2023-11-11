@@ -19,7 +19,7 @@ class Activity(models.Model):
     elevation_gain = models.IntegerField()
     elevation_loss = models.IntegerField()
     duration = models.IntegerField()
-    experience_gain = models.IntegerField()
+    experience_gain = models.IntegerField(default=0)
     user = models.ForeignKey(
         "customusers.CustomUser", related_name="activities", on_delete=models.CASCADE
     )

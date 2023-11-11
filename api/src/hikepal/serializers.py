@@ -16,7 +16,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             "user",
             "created_at",
         )
-        read_only_fields = ("id", "created_at", "experience_gain")
+        read_only_fields = ("id", "created_at", "experience_gain", "user")
 
     def create(self, validated_data):
         activity = Activity.objects.create(**validated_data)
