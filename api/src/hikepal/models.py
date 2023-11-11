@@ -4,7 +4,7 @@ from django.db import models
 class Trail(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
-    distance = models.IntegerField()
+    distance = models.FloatField()
     elevation_gain = models.IntegerField()
     elevation_loss = models.IntegerField()
     recommended_experience = models.IntegerField()

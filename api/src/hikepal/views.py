@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.db.models import Sum, Q
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
@@ -49,3 +52,35 @@ class ActivityListView(APIView):
         return Response(
             {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class LeaderboardView(APIView):
+    def get_range_dates(self):
+        current_date = datetime.now()
+        month = current_date.month
+        if month % 3 == 0:
+            season_start = datetime(year=current_date.year, month=month - 2, day=1)
+            season_end = datetime(year=current_date.year, month=month, day=1)
+        elif month % 3 == 1:
+            season_start = datetime(year=current_date.year, month=month, day=1)
+            season_end = datetime(year=current_date.year, month=month + 2, day=1)
+        else:
+            season_start = datetime(year=current_date.year, month=month - 1, day=1)
+            season_end = datetime(year=current_date.year, month=month + 1, day=1)
+        return season_start, season_end
+
+    def get(self, request):
+        # Get users sorted by sum of experience gained in activities performed in the specific season
+        range_start, range_end = self.get_range_dates()
+        users = (
+            CustomUser.objects.filter(is_superuser=False)
+            .annotate(
+                experience_gained=Sum(
+                    "activities__experience_gain",
+                    filter=Q(activities__created_at__range=(range_start, range_end)),
+                )
+            )
+            .order_by("-experience_gained")
+            .values("first_name", "last_name", "experience_gained")
+        )
+        return Response(users, status=status.HTTP_200_OK)
