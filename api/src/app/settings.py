@@ -129,8 +129,8 @@ REST_FRAMEWORK = {
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Blog API",
-    "DESCRIPTION": "Blog API made with Django Rest Framework",
+    "TITLE": "HikePal API",
+    "DESCRIPTION": "HikePal API made with Django Rest Framework",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
