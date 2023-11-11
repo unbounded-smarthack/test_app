@@ -11,6 +11,8 @@ bcrypt = "*"
 drf-spectacular = "*"
 python-dotenv = "*"
 django-cors-headers = "*"
+black = "*"
+pre-commit = "*"
 
 [dev-packages]
 
