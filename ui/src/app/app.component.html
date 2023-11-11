@@ -2,3 +2,17 @@
 <a [routerLink]="['/blog/1']">Blog</a>
 
 <router-outlet></router-outlet>
+
+<!-- Button to switch from login to registration-->
+<!--Use ngSwitch to switch between components-->
+<mat-button-toggle-group name="login-register" aria-label="Register or Login" [(ngModel)]="loginValue">
+  <mat-button-toggle value="login">Login</mat-button-toggle>
+  <mat-button-toggle value="register">Register</mat-button-toggle>
+</mat-button-toggle-group>
+
+<!--<div  [ngSwitch]="loginValue">-->
+<!--  <app-login-button></app-login-button>-->
+<!--  <app-user-profile></app-user-profile>-->
+<!--&lt;!&ndash;  <app-login-page *ngSwitchCase="'login'"></app-login-page>&ndash;&gt;-->
+<!--&lt;!&ndash;  <app-register-page *ngSwitchCase="'register'"></app-register-page>&ndash;&gt;-->
+<!--</div>-->
