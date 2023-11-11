@@ -10,6 +10,7 @@ psycopg = {extras = ["pool", "binary"], version = "*"}
 bcrypt = "*"
 drf-spectacular = "*"
 python-dotenv = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
