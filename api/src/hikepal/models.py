@@ -15,7 +15,7 @@ class Trail(models.Model):
 
 
 class Activity(models.Model):
-    distance = models.IntegerField()
+    distance = models.FloatField()
     elevation_gain = models.IntegerField()
     elevation_loss = models.IntegerField()
     duration = models.IntegerField()
@@ -24,3 +24,10 @@ class Activity(models.Model):
         "customusers.CustomUser", related_name="activities", on_delete=models.CASCADE
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def calculate_experience_gain(self):
+        # TODO: Implement a better algorithm for calculating experience gain
+        return self.distance + self.elevation_gain + self.elevation_loss
+
+    def __str__(self):
+        return f"{self.user.username} - {self.created_at}"
