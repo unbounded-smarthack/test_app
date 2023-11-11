@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'HomePage',),
+      home: const MyHomePage(title: '',),
     );
   }
 }
@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.add_task),
-            label: 'SkillTracker',
+            label: 'Tracker',
             backgroundColor: Colors.deepPurple
           ),
           BottomNavigationBarItem(
