@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileui/services/profileService.dart';
 
 import '../services/suggestionService.dart';
 
@@ -35,25 +36,34 @@ class _SuggestionPageState extends State<SuggestionPage> {
       child: Column(
         children: [
           const Text(
-            "Suggestion",
+            "Suggestions",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          FutureBuilder(
-              future: SuggestionService().getXp(),
-              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                if (snapshot.hasData) {
-                  return Text("Your current XP is: ${snapshot.data} ");
-                } else {
-                  return const Text(
-                    "Loading...",
-                    textAlign: TextAlign.center,
-                  );
+            Container(
+              child: FutureBuilder(
+                future: ProfileService().getProfileDetails(),
+                builder: (BuildContext context, AsyncSnapshot<ProfileDetails> snapshot) {
+                  if(snapshot.hasData) {
+                    return Text(
+                      "Your current XP: ${snapshot.data!.experience}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  } else {
+                    return const Text(
+                      "Loading...",
+                      textAlign: TextAlign.center,
+                    );
+                  }
                 }
-              }),
-          Expanded(
+              )
+            ),
+            Expanded(
             child: FutureBuilder(
               future: SuggestionService().getTrails(),
               builder: (BuildContext context, AsyncSnapshot<List<Trail>> snapshot) {

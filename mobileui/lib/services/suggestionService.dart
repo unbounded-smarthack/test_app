@@ -1,4 +1,7 @@
 //class to handle suggestion service
+import '../const.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SuggestionService {
 
@@ -7,51 +10,38 @@ class SuggestionService {
   }
 
   Future<List<Trail>> getTrails() async {
-  Trail trail1 = Trail(
-    trailname: "Trail 1",
-    distance: 1.0,
-    elevationGain: 1.0,
-    elevationLoss: 1.0,
-    experience: 1,
-    estimatedDuration: 1,
-  );
-
-  Trail trail2 = Trail(
-    trailname: "Trail 2",
-    distance: 2.0,
-    elevationGain: 2.0,
-    elevationLoss: 2.0,
-    experience: 2,
-    estimatedDuration: 2,
-  );
-
-  Trail trail3 = Trail(
-    trailname: "Trail 3",
-    distance: 3.0,
-    elevationGain: 3.0,
-    elevationLoss: 3.0,
-    experience: 3,
-    estimatedDuration: 3,
-  );
-
-  Trail trail4 = Trail(
-    trailname: "Trail 4",
-    distance: 4.0,
-    elevationGain: 4.0,
-    elevationLoss: 4.0,
-    experience: 4,
-    estimatedDuration: 4,
-  );
-
-  return [trail1, trail2, trail3, trail4];
+    return http.get(Uri.parse("${API_URL}/api/suggestions/"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          // Authorization
+          'Authorization': 'Token ${TOKEN}'
+        },
+        ).then((value) {
+          List<Trail> trails = [];
+          if (value.statusCode == 200) {
+            var data = jsonDecode(value.body);
+            for (var i = 0; i < data.length; i++) {
+              trails.add(Trail(
+                trailname: data[i]['name'],
+                distance: data[i]['distance'],
+                elevationGain: data[i]['elevation_gain'],
+                elevationLoss: data[i]['elevation_loss'],
+                experience: data[i]['recommended_experience'],
+                estimatedDuration: data[i]['estimated_duration'],
+              ));
+            }
+          }
+          print(trails);
+          return trails;
+        });
   }
 }
 
 class Trail {
   final String trailname;
   final double distance;
-  final double elevationGain;
-  final double elevationLoss;
+  final int elevationGain;
+  final int elevationLoss;
   final int experience;
   final int estimatedDuration;
 
