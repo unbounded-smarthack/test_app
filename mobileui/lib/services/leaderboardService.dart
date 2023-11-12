@@ -1,50 +1,46 @@
 //class to handle leaderboard service
 //should have a getLeaderboard method that returns the list of all users:
 
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+import '../const.dart';
+
 class LeaderboardService {
   Future<List<User>> getLeaderboard() async {
-        User user1 = User(
-          firstName: "John",
-          lastName: "Doe",
-          experience: 100,
-        );
-
-        User user2 = User(
-          firstName: "Jane",
-          lastName: "Doe",
-          experience: 200,
-        );
-
-        User user3 = User(
-          firstName: "John",
-          lastName: "Smith",
-          experience: 300,
-        );
-
-        User user4 = User(
-          firstName: "Jane",
-          lastName: "Smith",
-          experience: 400,
-        );
-
-        User user5 = User(
-          firstName: "John",
-          lastName: "Doe",
-          experience: 500,
-        );
-
-        return [user1, user2, user3, user4, user5];
-    }
+    return http.get(Uri.parse("${API_URL}/api/leaderboard/"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          // Authorization
+          'Authorization': 'Token ${TOKEN}'
+        },
+       ).then((value) {
+          List<User> users = [];
+          if (value.statusCode == 200) {
+            var data = jsonDecode(value.body);
+            for (var i = 0; i < data.length; i++) {
+              users.add(User(
+                first_name: data[i]['first_name'],
+                last_name: data[i]['last_name'],
+                experience: data[i]['experience_gained'] ?? 0,
+              ));
+            }
+          }
+          print(users);
+          return users;
+        });
   }
+}
 
 class User {
-  final String firstName;
-  final String lastName;
+  final String first_name;
+  final String last_name;
   int experience;
 
   User({
-    required this.firstName,
-    required this.lastName,
+    required this.first_name,
+    required this.last_name,
     required this.experience,
   });
 }

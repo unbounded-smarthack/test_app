@@ -45,6 +45,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           child: FutureBuilder(
           future: LeaderboardService().getLeaderboard(),
           builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+            print(snapshot.data);
             if (snapshot.hasData) {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
@@ -84,7 +85,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                               ),
                             const SizedBox(width: 16.0),
                             Expanded(child: Text(
-                              snapshot.data![index].firstName,
+                              snapshot.data![index].first_name,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.0,
