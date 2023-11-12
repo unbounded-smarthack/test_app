@@ -8,6 +8,10 @@ from app.settings import (
     DURATION_WEIGHT,
     SCALE_FACTOR,
     MIN_EXPERIENCE_GAIN_WEIGHT,
+    INITIAL_MAX_DISTANCE,
+    INITIAL_MAX_ELEVATION_GAIN,
+    INITIAL_MAX_ELEVATION_LOSS,
+    INITIAL_MAX_DURATION,
 )
 from hikepal.utils import normalize_value
 
@@ -42,21 +46,33 @@ class Trail(models.Model):
 
     @classmethod
     def calculate_max_distance(cls):
-        return cls.objects.aggregate(Max("distance"))["distance__max"]
+        value = cls.objects.aggregate(Max("distance"))["distance__max"]
+        if value is None:
+            return INITIAL_MAX_DISTANCE
+        return value
 
     @classmethod
     def calculate_max_elevation_gain(cls):
-        return cls.objects.aggregate(Max("elevation_gain"))["elevation_gain__max"]
+        value = cls.objects.aggregate(Max("elevation_gain"))["elevation_gain__max"]
+        if value is None:
+            return INITIAL_MAX_ELEVATION_GAIN
+        return value
 
     @classmethod
     def calculate_max_elevation_loss(cls):
-        return cls.objects.aggregate(Max("elevation_loss"))["elevation_loss__max"]
+        value = cls.objects.aggregate(Max("elevation_loss"))["elevation_loss__max"]
+        if value is None:
+            return INITIAL_MAX_ELEVATION_LOSS
+        return value
 
     @classmethod
     def calculate_max_duration(cls):
-        return cls.objects.aggregate(Max("estimated_duration"))[
+        value = cls.objects.aggregate(Max("estimated_duration"))[
             "estimated_duration__max"
         ]
+        if value is None:
+            return INITIAL_MAX_DURATION
+        return value
 
     def save(self, *args, **kwargs):
         self.recommended_experience = calculate_experience(

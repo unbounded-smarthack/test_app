@@ -79,6 +79,7 @@ class LeaderboardView(APIView):
     def get(self, request):
         # Get users sorted by sum of experience gained in activities performed in the specific season
         range_start, range_end = self.get_range_dates()
+        current_user_id = self.request.user.id
         users = (
             CustomUser.objects.filter(is_superuser=False)
             .annotate(
@@ -88,8 +89,11 @@ class LeaderboardView(APIView):
                 )
             )
             .order_by("-experience_gained")
-            .values("first_name", "last_name", "experience_gained")
+            .values("id", "first_name", "last_name", "experience_gained")
         )
+        users = [
+            {**user, "is_current_user": user["id"] == current_user_id} for user in users
+        ]
         return Response(users, status=status.HTTP_200_OK)
 
 
