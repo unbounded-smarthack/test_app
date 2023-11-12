@@ -53,6 +53,65 @@ class _SuggestionPageState extends State<SuggestionPage> {
                   );
                 }
               }),
+          Expanded(
+            child: FutureBuilder(
+              future: SuggestionService().getTrails(),
+              builder: (BuildContext context, AsyncSnapshot<List<Trail>> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        elevation: 2.0,
+                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child:
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        snapshot.data![index].trailname,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${snapshot.data![index].distance.toString()} km',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                        )
+                                      ),
+                                    ]
+                                  )
+                                ),
+                                Text(
+                                  '${snapshot.data![index].experience.toString()} XP',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                  )
+                                )
+                              ]
+                            )
+                          )
+
+                      );
+                    },
+                  );
+                } else {
+                  return const Text(
+                    "Loading...",
+                    textAlign: TextAlign.center,
+                  );
+                }
+              },
+            )
+          )
         ],
       ),
     );
