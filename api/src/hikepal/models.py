@@ -2,13 +2,13 @@ from django.db import models
 from django.db.models import Max
 
 from app.settings import (
-    EXPERIENCE_GAIN_WEIGHT,
     DISTANCE_WEIGHT,
     ELEVATION_GAIN_WEIGHT,
     ELEVATION_LOSS_WEIGHT,
     DURATION_WEIGHT,
     MAX_EXPERIENCE_GAIN,
     SCALE_FACTOR,
+    MIN_EXPERIENCE_GAIN_WEIGHT,
 )
 from hikepal.utils import normalize_value
 
@@ -84,13 +84,18 @@ class Activity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def calculate_experience_gain(self):
-        return max(
-            EXPERIENCE_GAIN_WEIGHT
-            * calculate_experience(
-                self.distance, self.elevation_gain, self.elevation_loss, self.duration
-            ),
-            MAX_EXPERIENCE_GAIN,
+        activity_experience = calculate_experience(
+            self.distance, self.elevation_gain, self.elevation_loss, self.duration
         )
+        user_experience = self.user.experience
+        experience_gain_weight = max(
+            normalize_value(activity_experience - user_experience, SCALE_FACTOR),
+            MIN_EXPERIENCE_GAIN_WEIGHT,
+        )
+        experience_gain = min(
+            experience_gain_weight * activity_experience, MAX_EXPERIENCE_GAIN
+        )
+        return
 
     def __str__(self):
         return f"{self.user.username} - {self.created_at}"

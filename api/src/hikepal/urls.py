@@ -1,8 +1,9 @@
 from django.urls import path
 
-from hikepal.views import ActivityListView, LeaderboardView
+from hikepal.views import ActivityListView, LeaderboardView, TrailSuggestionsView
 
 urlpatterns = [
-    path("activities/<int:user_id>/", ActivityListView.as_view(), name="activities"),
+    path("activities/", ActivityListView.as_view(), name="activities"),
     path("leaderboard/", LeaderboardView.as_view(), name="leaderboard"),
+    path("suggestions/", TrailSuggestionsView.as_view(), name="suggestions"),
 ]

@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
+from django.db.models.functions import Abs
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework import status
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from customusers.models import CustomUser
-from hikepal.models import Activity
-from hikepal.serializers import ActivitySerializer
+from hikepal.models import Activity, Trail
+from hikepal.serializers import ActivitySerializer, TrailSerializer
 
 
 class ActivityListView(APIView):
@@ -21,8 +21,8 @@ class ActivityListView(APIView):
             200: OpenApiResponse(description="Json Response with all the activities"),
         },
     )
-    def get(self, request, user_id):
-        activities = Activity.objects.filter(user_id=user_id)
+    def get(self, request):
+        activities = Activity.objects.filter(user_id=self.request.user.id)
         serializer = ActivitySerializer(activities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -35,8 +35,8 @@ class ActivityListView(APIView):
             400: OpenApiResponse(description="Json Response with the error"),
         },
     )
-    def post(self, request, user_id):
-        user = get_object_or_404(CustomUser, pk=user_id)
+    def post(self, request):
+        user = self.request.user
 
         serializer = ActivitySerializer(data=request.data)
         if serializer.is_valid():
@@ -69,6 +69,13 @@ class LeaderboardView(APIView):
             season_end = datetime(year=current_date.year, month=month + 1, day=1)
         return season_start, season_end
 
+    @extend_schema(
+        summary="Leaderboard",
+        description="Leaderboard",
+        responses={
+            200: OpenApiResponse(description="Json Response with the leaderboard"),
+        },
+    )
     def get(self, request):
         # Get users sorted by sum of experience gained in activities performed in the specific season
         range_start, range_end = self.get_range_dates()
@@ -84,3 +91,27 @@ class LeaderboardView(APIView):
             .values("first_name", "last_name", "experience_gained")
         )
         return Response(users, status=status.HTTP_200_OK)
+
+
+class TrailSuggestionsView(APIView):
+    @extend_schema(
+        summary="Trail Suggestions",
+        description="Trail Suggestions",
+        responses={
+            200: OpenApiResponse(
+                description="Json Response with the trails sorted by experience difference"
+            ),
+        },
+    )
+    def get(self, request):
+        user = self.request.user
+        # Get trails sorted by the modulo of the difference between the user's experience and the recommended experience of the trail
+        trails = (
+            Trail.objects.all()
+            .annotate(
+                experience_difference=Abs(F("recommended_experience") - user.experience)
+            )
+            .order_by("experience_difference")
+        )
+        serializer = TrailSerializer(trails, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

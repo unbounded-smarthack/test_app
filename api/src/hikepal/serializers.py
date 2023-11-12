@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from hikepal.models import Activity
+from hikepal.models import Activity, Trail
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -23,3 +23,18 @@ class ActivitySerializer(serializers.ModelSerializer):
         activity.experience_gain = activity.calculate_experience_gain()
         activity.save()
         return activity
+
+
+class TrailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trail
+        fields = (
+            "id",
+            "name",
+            "distance",
+            "elevation_gain",
+            "elevation_loss",
+            "estimated_duration",
+            "recommended_experience",
+        )
+        read_only_fields = ("id", "recommended_experience", "created_at")
