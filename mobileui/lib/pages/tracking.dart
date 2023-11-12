@@ -21,18 +21,6 @@ class GeolocationRecord {
   });
 }
 
-class DurationActivity {
-  String hours;
-  String minutes;
-  String seconds;
-
-  DurationActivity({
-    required this.hours,
-    required this.minutes,
-    required this.seconds,
-  });
-}
-
 class TrackingPage extends StatefulWidget {
   const TrackingPage({super.key});
 
@@ -44,10 +32,11 @@ class _TrackingPageState extends State<TrackingPage> {
   List<GeolocationRecord> geolocationRecords = [];
   DateTime? startTracking = null;
   DateTime? currentTimestamp = null;
-  DurationActivity duration = DurationActivity(hours: "00", minutes: "00", seconds: "00");
+  String duration = "00:00:00";
   double distance = 0;
   double elevationGain = 0;
   double elevationLoss = 0;
+  bool finished = false;
 
   // Get Every 1 second geolocation
   // Add to geolocationRecords
@@ -55,37 +44,39 @@ class _TrackingPageState extends State<TrackingPage> {
     setState(() {
       startTracking = DateTime.now();
     });
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 2), (timer) {
       setState(() {
         currentTimestamp = DateTime.now();
         if (startTracking == null) {
           return;
         }
         int difference = currentTimestamp!.difference(startTracking!).inSeconds;
-        duration.seconds = difference % 60 / 10 >= 1
-            ? (difference % 60).toStringAsFixed(0)
-            : "0${(difference % 60).toStringAsFixed(0)}";
-        duration.minutes = ((difference / 60) % 60 / 10 >= 1
-                ? ((difference / 60) % 60).toStringAsFixed(0)
-                : "0${((difference / 60) % 60).toStringAsFixed(0)}");
-        duration.hours = (difference / 3600 / 10 >= 1
-                ? (difference / 3600).toStringAsFixed(0)
-                : "0${(difference / 3600).toStringAsFixed(0)}");
       });
       if (startTracking != null) {
         _getGeolocation();
-      };
+      }
+      ;
     });
   }
 
   // Stop getting geolocation
   void stop() {
     setState(() {
+      finished = true;
       startTracking = null;
-      duration = DurationActivity(hours: "00", minutes: "00", seconds: "00");
     });
   }
 
+  void reset() {
+    setState(() {
+      finished = false;
+      duration = "00:00:00";
+      distance = 0;
+      elevationGain = 0;
+      elevationLoss = 0;
+      geolocationRecords = [];
+    });
+  }
 
   void _getGeolocation() {
     setState(() {
@@ -111,7 +102,7 @@ class _TrackingPageState extends State<TrackingPage> {
             currentLocation.latitude!,
             currentLocation.longitude!,
           );
-          if (newDistance < 20) return;
+          if (newDistance < 10) return;
 
           distance += newDistance;
           geolocationRecords.add(currentLocation);
@@ -144,88 +135,87 @@ class _TrackingPageState extends State<TrackingPage> {
                         .asMap()
                         .map((index, value) => MapEntry(
                             index,
-                            FlSpot(
-                                index.toDouble()+1,
-                                value.altitude != null
-                                    ? value.altitude!
-                                    : 0)))
+                            FlSpot(index.toDouble() + 1,
+                                value.altitude != null ? value.altitude! : 0)))
                         .values
                         .toList(),
                   ),
                   Expanded(
-                     child: Center(
-                       child: Column(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           Text(
-                             currentTimestamp != null? "${duration.hours}:${duration.minutes}:${duration.seconds}" : "00:00:00",
-                                  style: const TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            currentTimestamp != null
+                                ? "${duration}"
+                                : "00:00:00",
+                            style: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                           Row(
-                             mainAxisAlignment: MainAxisAlignment.center,
-                             children: [
-                               const Icon(
-                                 Icons.hiking,
-                                 size: 30,
-                               ),
-                               const SizedBox(
-                                 width: 10,
-                               ),
-                               Text(
-                                 "${distance.round()}",
-                                 style: const TextStyle(
-                                   fontSize: 20,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
-                             ],
-                           ),
-                           const SizedBox(
-                             height: 10,
-                           ),
-                           Row(
-                             mainAxisAlignment: MainAxisAlignment.center,
-                             children: [
-                               const Icon(
-                                 Icons.north_east,
-                                 size: 30,
-                               ),
-                               const SizedBox(
-                                 width: 10,
-                               ),
-                               Text(
-                                 "${elevationGain.round()}",
-                                 style: const TextStyle(
-                                   fontSize: 20,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
-                               const SizedBox(
-                                 width: 20,
-                               ),
-                               const Icon(
-                                 Icons.south_east,
-                                 size: 30,
-                               ),
-                               const SizedBox(
-                                 width: 10,
-                               ),
-                               Text(
-                                 "${elevationLoss.round()}",
-                                 style: const TextStyle(
-                                   fontSize: 20,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
-                             ],
-                           ),
-                         ],
-                       ),
-                     ),
-                   ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.hiking,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${distance.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.north_east,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${elevationGain.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              const Icon(
+                                Icons.south_east,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${elevationLoss.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: OutlinedButton(
@@ -240,9 +230,7 @@ class _TrackingPageState extends State<TrackingPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-
                       ),
-
                       child: const Text(
                         "Finish",
                         style: TextStyle(
@@ -269,48 +257,167 @@ class _TrackingPageState extends State<TrackingPage> {
                 ],
               )
             : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Expanded(child: SizedBox()),
-                    Container(
-                      padding: const EdgeInsets.all(30),
-                      child: const Column(
+                child: finished
+                    ? Column(
                         children: [
-                          Text(
-                            "Start your hike",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              height: 1,
-                              fontSize: 30,
-                            ),
-                          ),
-                          Text("NOW!",
+                          const Expanded(child: SizedBox()),
+                          const Text("Congratulations!",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 height: 1,
-                                fontSize: 70,
+                                fontSize: 50,
                                 fontWeight: FontWeight.bold,
                               )),
+                          const Text("You have finished your hike!",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                height: 1,
+                                fontSize: 30,
+                              )),
+                          // Distance
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.hiking,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${distance.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          // Elevation Gain
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.north_east,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${elevationGain.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              const Icon(
+                                Icons.south_east,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${elevationLoss.round()}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // XP
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${(distance / 1000).round()} XP",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Expanded(child: SizedBox()),
+                          TextButton(
+                            onPressed: reset,
+                            child: const Text(
+                              "Reset",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                        ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Expanded(child: SizedBox()),
+                          Container(
+                            padding: const EdgeInsets.all(30),
+                            child: const Column(
+                              children: [
+                                Text(
+                                  "Start your hike",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    height: 1,
+                                    fontSize: 30,
+                                  ),
+                                ),
+                                Text("NOW!",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      height: 1,
+                                      fontSize: 70,
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                              ],
+                            ),
+                          ),
+                          const Expanded(child: SizedBox()),
+                          TextButton(
+                            onPressed: start,
+                            child: const Text(
+                              "Start",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
                         ],
                       ),
-                    ),
-                    const Expanded(child: SizedBox()),
-                    TextButton(
-                      onPressed: start,
-                      child: const Text(
-                        "Start",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                  ],
-                ),
               ));
   }
 }
