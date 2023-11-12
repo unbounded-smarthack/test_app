@@ -21,7 +21,19 @@ class LeaderboardService {
           experience: 300,
         );
 
-        return [user1, user2, user3];
+        User user4 = User(
+          firstName: "Jane",
+          lastName: "Smith",
+          experience: 400,
+        );
+
+        User user5 = User(
+          firstName: "John",
+          lastName: "Doe",
+          experience: 500,
+        );
+
+        return [user1, user2, user3, user4, user5];
     }
   }
 
