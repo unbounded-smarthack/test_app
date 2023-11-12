@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:mobileui/const.dart';
+import 'package:http/http.dart' as http;
 
 import '../components/elevation_chart.dart';
+import '../services/tracking_service.dart';
 
 class GeolocationRecord {
   final double? latitude;
@@ -32,11 +36,14 @@ class _TrackingPageState extends State<TrackingPage> {
   List<GeolocationRecord> geolocationRecords = [];
   DateTime? startTracking = null;
   DateTime? currentTimestamp = null;
-  String duration = "00:00:00";
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
   double distance = 0;
   double elevationGain = 0;
   double elevationLoss = 0;
   bool finished = false;
+  bool isLoading = false;
 
   // Get Every 1 second geolocation
   // Add to geolocationRecords
@@ -51,26 +58,52 @@ class _TrackingPageState extends State<TrackingPage> {
           return;
         }
         int difference = currentTimestamp!.difference(startTracking!).inSeconds;
+        hours = difference ~/ 3600;
+        minutes = (difference - hours * 3600) ~/ 60;
+        seconds = difference - hours * 3600 - minutes * 60;
       });
       if (startTracking != null) {
         _getGeolocation();
       }
-      ;
     });
   }
 
   // Stop getting geolocation
   void stop() {
     setState(() {
-      finished = true;
-      startTracking = null;
+      isLoading = true;
+    });
+    TrackingService().registerActivity(
+        distance, elevationGain, elevationLoss, currentTimestamp?.difference(startTracking!).inMinutes
+    ).then((value) {
+        setState(() {
+          isLoading = false;
+        });
+        if (value.statusCode == 200) {
+          setState(() {
+            finished = true;
+            startTracking = null;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error'),
+            ),
+          );
+        }
+      });
+    setState(() {
+
+      isLoading = true;
     });
   }
 
   void reset() {
     setState(() {
       finished = false;
-      duration = "00:00:00";
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
       distance = 0;
       elevationGain = 0;
       elevationLoss = 0;
@@ -125,7 +158,10 @@ class _TrackingPageState extends State<TrackingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return isLoading ? const Center(
+      child: CircularProgressIndicator(),
+    ) :
+    Material(
         child: startTracking != null
             ? Column(
                 children: [
@@ -147,7 +183,7 @@ class _TrackingPageState extends State<TrackingPage> {
                         children: [
                           Text(
                             currentTimestamp != null
-                                ? "${duration}"
+                                ? ""
                                 : "00:00:00",
                             style: const TextStyle(
                               fontSize: 40,
