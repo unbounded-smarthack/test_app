@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobileui/services/activities_service.dart';
+
 import '../services/profileService.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -9,6 +11,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  List<Activity> activities = [
+    Activity(distance: 16.5, elevationGain: 167, elevationLoss: 120, duration: 240),
+    Activity(distance: 12.3, elevationGain: 124, elevationLoss: 187, duration: 160),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -64,6 +71,62 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
           ),
+          Expanded(child: Column(
+            children: [
+              Text("Activities",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: activities.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      elevation: 2.0,
+                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child:
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '${activities[index].distance.toString()} km',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${activities[index].duration.toString()} min',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                      )
+                                    ),
+                                  ]
+                                )
+                              ),
+                              Text(
+                                '${activities[index].elevationGain.toString()} m',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                )
+                              )
+                            ]
+                          )
+                        )
+                    );
+                  },
+                ),
+              )
+            ],
+          ))
         ],
       ),
     );

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
-import 'package:mobileui/const.dart';
-import 'package:http/http.dart' as http;
 
 import '../components/elevation_chart.dart';
 import '../services/tracking_service.dart';
@@ -44,6 +43,7 @@ class _TrackingPageState extends State<TrackingPage> {
   double elevationLoss = 0;
   bool finished = false;
   bool isLoading = false;
+  int? xp = null;
 
   // Get Every 1 second geolocation
   // Add to geolocationRecords
@@ -51,7 +51,7 @@ class _TrackingPageState extends State<TrackingPage> {
     setState(() {
       startTracking = DateTime.now();
     });
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         currentTimestamp = DateTime.now();
         if (startTracking == null) {
@@ -79,10 +79,11 @@ class _TrackingPageState extends State<TrackingPage> {
         setState(() {
           isLoading = false;
         });
-        if (value.statusCode == 200) {
+        if (value.statusCode == 201) {
           setState(() {
             finished = true;
             startTracking = null;
+            xp = jsonDecode(value.body);
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -117,7 +118,7 @@ class _TrackingPageState extends State<TrackingPage> {
         GeolocationRecord currentLocation = GeolocationRecord(
           latitude: value.latitude,
           longitude: value.longitude,
-          altitude: value.altitude,
+          altitude: (100 + Random().nextInt(10) - 3).toDouble(),
           timestamp: DateTime.now(),
         );
         if (geolocationRecords.isEmpty) {
@@ -125,21 +126,18 @@ class _TrackingPageState extends State<TrackingPage> {
           return;
         }
         GeolocationRecord previousLocation = geolocationRecords.last;
-        if (previousLocation.latitude != null &&
-            previousLocation.longitude != null &&
-            currentLocation.latitude != null &&
-            currentLocation.longitude != null) {
-          double newDistance = Geolocator.distanceBetween(
-            previousLocation.latitude!,
-            previousLocation.longitude!,
-            currentLocation.latitude!,
-            currentLocation.longitude!,
-          );
-          if (newDistance < 10) return;
+        double newDistance = Geolocator.distanceBetween(
+          previousLocation.latitude!,
+          previousLocation.longitude!,
+          currentLocation.latitude!,
+          currentLocation.longitude!
+        );
 
-          distance += newDistance;
-          geolocationRecords.add(currentLocation);
-        }
+        if (newDistance < 10) return;
+
+        distance += newDistance;
+        geolocationRecords.add(currentLocation);
+
 
         if (previousLocation.altitude == null ||
             currentLocation.altitude == null) {
@@ -183,7 +181,7 @@ class _TrackingPageState extends State<TrackingPage> {
                         children: [
                           Text(
                             currentTimestamp != null
-                                ? ""
+                                ? "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}"
                                 : "00:00:00",
                             style: const TextStyle(
                               fontSize: 40,
@@ -276,20 +274,6 @@ class _TrackingPageState extends State<TrackingPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      itemCount: geolocationRecords.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                              "Lat: ${geolocationRecords[index].latitude} Long: ${geolocationRecords[index].longitude} Alt: ${geolocationRecords[index].altitude}"),
-                          subtitle: Text(
-                              "Timestamp: ${geolocationRecords[index].timestamp}"),
-                        );
-                      },
-                    ),
-                  ),
                 ],
               )
             : Center(
@@ -304,11 +288,14 @@ class _TrackingPageState extends State<TrackingPage> {
                                 fontSize: 50,
                                 fontWeight: FontWeight.bold,
                               )),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           const Text("You have finished your hike!",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 height: 1,
-                                fontSize: 30,
+                                fontSize: 20,
                               )),
                           // Distance
                           const SizedBox(
@@ -388,7 +375,7 @@ class _TrackingPageState extends State<TrackingPage> {
                                 width: 10,
                               ),
                               Text(
-                                "${(distance / 1000).round()} XP",
+                                "${xp ?? 0} XP",
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
